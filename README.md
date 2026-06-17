@@ -8,7 +8,7 @@ remotes::install_github("david-zucker/illdthCIF1")
 
 If that fails, follow the steps below:
 
-1. Click the green button "Code" in the upper right of this page and then in the dropdown select "Download ZIP".
+1. Click the green button "Code" in the upper right of the main package page and then in the dropdown select "Download ZIP".
 
 2. In R, set your working directory to the directory into which you dowloaded the zip file.
 
