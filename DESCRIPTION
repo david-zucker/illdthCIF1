@@ -1,12 +1,14 @@
 Package: illdthCIF1
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Cumulative Incidence Function Estimation in the Illness-Death Model
+Version: 1.1.1
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("David", "Zucker", , "david.zucker@mail.huji.ac.il", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-2104-4913"))
+Description: R code for for applying to a dataset methods for estimating the
+   cumulative incidence function for disease in an illness-death model.
+License: GPL (>= 3)
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+Roxygen: list(markdown = FALSE)
+RoxygenNote: 8.0.0
+Imports: 
+    survival

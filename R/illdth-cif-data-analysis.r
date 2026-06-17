@@ -1,29 +1,8 @@
 ### Cumulative Incidence Function Estimation in the Illness-Death Model Using All Disease Cases
 ### David Zucker and Malka Gorfine
 
-#' Apply methods for estimating the cumulative incidence function for disease in an illness-death model.
-#'
-#' @param age_recr age at recruitment
-#' @param age_diag age at diagnosis
-#' @param age_death age at death
-#' @param age_end_fu age at end of follow-up (death or censoring)
-#' @param status_end status at end of follow-up
-#' @param tgrd grid of ages at which the CIF will be computed
-#' @param tgrd.cb grid of ages over which the simultaneous confidence band will be computed (subset of tgrd)
-#' @param covpr desired confidence interval coverage probability
-#' @param nresam number of bootstrap replications for confidence band
-#' @param dtgrd_width grid width for age at diagnosis in conditional survival calculation
-#' @param bwselect flag for whether to carry out bandwidth selection
-#' @param bwvec vector of candidate bandwidths
-#' @param nfld number of folds in crossvalidation procedure for selecting the bandwidth
-#' @param redo_bw flag for redoing bandwidth selection in bootstrap
-#' @return description
-#' @export
-
-
-
 ### Code by David Zucker
-### Version of 31 March 2026
+### Version of 16 June 2026
 
 ### R code for for applying to a dataset methods for estimating the
 ### cumulative incidence function for disease in an illness-death model.
@@ -62,10 +41,10 @@
 # bwvec = vector of candidate bandwidths
 # nfld = number of folds in crossvalidation procedure for selecting the bandwidth
 # redo_bw = flag for redoing bandwidth selection in bootstrap
+# verbose = TRUE/FALSE code for verbose intermediate output
 
 # when no bandwidth selection is done, the bandwidth used is bwvec[1]
 
-library(survival)
 didl = 1e-8
 
 ### FUNCTIONS ##################################################################
@@ -294,7 +273,7 @@ cifcmp.gzs = function(age_recr, age_diag, age_death, age_end_fu,
   age_death[ix.cen] = Inf
 
   #KAPLAN-MEIER ESTIMATE OF DEATH TIME DISTN
-  km_dth = survfit(Surv(age_recr, age_end_fu, died) ~ 1, timefix=FALSE, weights=wts)
+  km_dth = survival::survfit(survival::Surv(age_recr, age_end_fu, died) ~ 1, timefix=FALSE, weights=wts)
   km_dth_times = km_dth$time
   km_dth_surv = km_dth$surv
   ndth = length(km_dth_times)
@@ -434,14 +413,14 @@ cifcmp.new = function(age_recr, age_diag, age_death, age_end_fu,
   age_grd_w_cv = 2*dtgrd_width
 
   #KAPLAN-MEIER ESTIMATE OF DEATH TIME DISTN
-  km_dth = survfit(Surv(age_recr, age_end_fu, died) ~ 1, timefix=FALSE, weights=wts)
+  km_dth = survival::survfit(survival::Surv(age_recr, age_end_fu, died) ~ 1, timefix=FALSE, weights=wts)
   km_dth_times = km_dth$time
   km_dth_surv = km_dth$surv
   ndth = length(km_dth_times)
 
   #SURVIVAL CURVE FOR TIME FROM RECRUITMENT TO CENSORING
   fu_time = age_end_fu - age_recr
-  km_cens = survfit(Surv(fu_time, alive) ~ 1, timefix=FALSE, weights=wts)
+  km_cens = survival::survfit(survival::Surv(fu_time, alive) ~ 1, timefix=FALSE, weights=wts)
 
   #DATA SETUP FOR CONDITIONAL SURVIVAL CALCULATION
   tstart = pmax(age_recr[ix.case],age_diag[ix.case])
@@ -631,14 +610,64 @@ boot.ci = function(nresam, orig.est, boot.est, covpr, ixcb) {
 #END OF FUNCTION FOR BOOTSTRAP CI'S
 
 #FUNCTION COMPUTE ALL ESTIMATORS WITH CONFIDENCE INTERVALS AND BANDS
+
+#' Apply three methods (see note below) for estimating the cumulative incidence function for disease in an illness-death model.
+#'
+#' @param age_recr age at recruitment
+#' @param age_diag age at diagnosis
+#' @param age_death age at death
+#' @param age_end_fu age at end of follow-up (death or censoring)
+#' @param status_end status at end of follow-up
+#' @param tgrd grid of ages at which the CIF will be computed
+#' @param tgrd.cb grid of ages over which the simultaneous confidence band will be computed (subset of tgrd)
+#' @param covpr desired confidence interval coverage probability
+#' @param nresam number of bootstrap replications for confidence band
+#' @param dtgrd_width grid width for age at diagnosis in conditional survival calculation
+#' @param bwselect TRUE/FALSE flag for whether to carry out bandwidth selection
+#' @param bwvec vector of candidate bandwidths
+#' @param nfld number of folds in crossvalidation procedure for selecting the bandwidth
+#' @param redo_bw TRUE/FALSE flag for redoing bandwidth selection in bootstrap
+#' @param verbose TRUE/FALSE code for verbose intermediate output
+#' @return a list containing the estimates, pointwise confidence limits, and simultaneous confidence band limits
+#' for all three methods and the bandwidth parameter for the Zucker-Gorfine method
+#'
+#' @note
+#'
+#' Methods provided: \cr
+#' 1. The method of Aalen and Johansen (1978) \cr
+#' 2. The method of Gorfine, Zucker, and Shoham (2025) \cr
+#' 3. The method of Zucker and Gorfine (2026)
+#'
+#' Method #3 includes all disease cases.
+#'
+#' status_end = status at end of follow-up \cr
+#' 0 = alive without disease (i.e. censored) \cr
+#' 1 = died without disease \cr
+#' 2 = alive with disease \cr
+#' 3 = died with disease \cr
+#'
+#' When no bandwidth selection is done, the bandwidth used is bwvec[1].
+#'
+#' @references Aalen, O. O. and Johansen, S. (1978). An empirical transition matrix for non-homogeneous Markov chains
+#' based on censored observations. Scandinavian Journal of Statistics, 5:141–150.
+#'
+#' @references Gorfine, M., Zucker, D. M., and Shoham, S. (2025). Cumulative incidence function estimation using populationbased
+#' biobank data. Biometrics, 81(3):ujaf049.
+#'
+#' @references Zucker, D. M. and Gorfine, M. Cumulative incidence function
+#' estimation in the illness-death model using all disease cases. arXiv.
+#'
+#' @import stats
+#'
+#' @export
+
 cifcmp.full = function(age_recr, age_diag, age_death, age_end_fu, status_end,
-  tgrd, tgrd.cb, covpr, nresam, dtgrd_width, bwselect, bwvec, nfld, redo_bw) {
+  tgrd, tgrd.cb, covpr, nresam, dtgrd_width, bwselect, bwvec, nfld, redo_bw, verbose) {
 
   #PRELIMINARIES
   n = length(age_recr)
   ntgrd = length(tgrd)
   ixcb = which(tgrd %in% tgrd.cb)
-  verbose = TRUE
 
   #BOOTSTRAP SAMPLES
   b_ix = NULL
@@ -653,7 +682,7 @@ cifcmp.full = function(age_recr, age_diag, age_death, age_end_fu, status_end,
   new.boot.est = matrix(NA,nresam,ntgrd)
 
   #AALEN-JOHANSEN ESTMATOR
-  if (verbose) print(noquote('Computing AJ estimator ...'))
+  print(noquote('Computing AJ estimator ...'))
   cifest.aj = cifcmp.aj(age_recr, age_diag, age_death, age_end_fu,
     status_end, tgrd, rep(1,n))
   aj.est = cifest.aj$cifest
@@ -674,7 +703,7 @@ cifcmp.full = function(age_recr, age_diag, age_death, age_end_fu, status_end,
   aj.band.width = aj.ci.rslts$band.width
 
   #GZS ESTIMATOR
-  if (verbose) print(noquote('Computing GZS estimator ...'))
+  print(noquote('Computing GZS estimator ...'))
   cifest.gzs = cifcmp.gzs(age_recr, age_diag, age_death, age_end_fu,
     status_end, tgrd, rep(1,n))
   gzs.est = cifest.gzs$cifest
@@ -695,7 +724,7 @@ cifcmp.full = function(age_recr, age_diag, age_death, age_end_fu, status_end,
   gzs.band.width = gzs.ci.rslts$band.width
 
   #NEW ESTIMATOR
-  if (verbose) print(noquote('Computing new estimator ...'))
+  print(noquote('Computing new estimator ...'))
   cifest.new = cifcmp.new(age_recr, age_diag, age_death, age_end_fu,
     status_end, tgrd, bwselect, bwvec, nfld, dtgrd_width, rep(1,n))
   new.est = cifest.new$cifest

@@ -19,7 +19,7 @@ cifcmp.full(
   bwvec,
   nfld,
   redo_bw,
-  verbosity
+  verbose
 )
 }
 \arguments{
@@ -51,7 +51,7 @@ cifcmp.full(
 
 \item{redo_bw}{TRUE/FALSE flag for redoing bandwidth selection in bootstrap}
 
-\item{verbosity}{code for verbosity level (0=none, 1=intermediate, 2=full)}
+\item{verbose}{TRUE/FALSE code for verbose intermediate output}
 }
 \value{
 a list containing the estimates, pointwise confidence limits, and simultaneous confidence band limits
