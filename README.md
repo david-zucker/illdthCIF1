@@ -3,6 +3,7 @@ Efficient Cumulative Incidence Estimation in Biobank Studies Using All Prevalent
 Preferred package installation method:
 
 install.packages("remotes")
+
 remotes::install_github("david-zucker/illdthCIF1")
 
 If that fails, follow the steps below:
