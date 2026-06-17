@@ -8,13 +8,10 @@ remotes::install_github("david-zucker/illdthCIF1")
 
 If that fails, follow the steps below:
 
-1. Using your browser, navigate to
-https://github.com/david-zucker/illdthCIF1
+1. Click the green button "Code" in the upper right of this page and then in the dropdown select "Download ZIP".
 
-2. Click Code → Download ZIP
+2. In R, set your working directory to the directory into which you dowloaded the zip file.
 
-3. In R, set your working directory to the directory into which you dowloaded the zip file.
-
-4. In R, enter the following command:
+3. In R, enter the following command:
 
 remotes::install_local("illdthCIF1-main.zip")
