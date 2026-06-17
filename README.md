@@ -1,1 +1,1 @@
-Cumulative Incidence Function Estimation in the Illness-Death Model Using All Disease Cases
+Efficient Cumulative Incidence Estimation in Biobank Studies Using All Prevalent and Incident Events
