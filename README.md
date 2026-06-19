@@ -23,3 +23,7 @@ If that fails, follow the steps below:
 remotes::install_local("illdthCIF1-main.zip")
 
 The companion branch "docs" contains the arxiv paper and the package manual.
+
+The repository 
+https://github.com/david-zucker/illness-death-1
+contains the R code used to generate the simulations reported in the paper and detailed simulation results.
